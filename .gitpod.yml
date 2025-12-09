@@ -1,0 +1,17 @@
+image: gitpod/workspace-full:latest
+tasks:
+  - init: |
+      sudo apt-get update && sudo apt-get install -y \
+        cmake ninja-build qt6-base-dev qt6-base-dev-tools \
+        libgl1-mesa-dev xorg-dev novnc websockify x11vnc fluxbox
+    command: |
+      export DISPLAY=:1
+      Xvfb :1 -screen 0 1280x800x24 &
+      fluxbox &
+      websockify --web=/usr/share/novnc/ 6080 localhost:5900 &
+      x11vnc -display :1 -rfbport 5900 -forever -shared -nopw &
+      mkdir -p build && cd build && cmake -G Ninja .. && ninja && ./Maze3DGenerator
+ports:
+  - port: 6080
+    onOpen: open-browser
+    visibility: public
